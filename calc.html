@@ -5,239 +5,243 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Equações</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f4f4f4; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
         }
-        .container {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            width: 100%;
-            max-width: 600px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        .container { 
+            background-color: #fff; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            padding: 20px; 
+            width: 100%; 
+            max-width: 600px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
         }
-        .title {
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 2px;
-            color: #333;
+        .title { 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-bottom: 15px; 
+            color: #333; 
         }
-        .label {
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 5px;
-            color: #000;
+        .label { 
+            font-weight: bold; 
+            font-size: 14px; 
+            margin-bottom: 5px; 
+            color: #000; 
+            display: block;
         }
-        .input-text {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
-            margin-bottom: 15px;
+        .input-text { 
+            width: 100%; 
+            padding: 8px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 14px; 
+            margin-bottom: 15px; 
         }
-        .info-line {
-            font-size: 14px;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 5px;
-            margin-bottom: 10px;
+        .variables-container { 
+            margin-bottom: 15px; 
         }
-        .variables-container {
-            margin-bottom: 15px;
+        .variable-field { 
+            margin-bottom: 10px; 
+            display: flex; 
+            flex-direction: column; 
         }
-        .variable-field {
-            margin-bottom: 10px;
-            display: flex;
-            flex-direction: column;
+        .variable-field label { 
+            font-size: 13px; 
+            font-weight: bold; 
+            margin-bottom: 4px; 
         }
-        .variable-field label {
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 4px;
+        .variable-field input { 
+            padding: 6px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            font-size: 14px; 
         }
-        .variable-field input {
-            padding: 6px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .btn-calcular {
-            width: 100%;
+        .btn-calcular { 
+            width: 100%; 
             background-color: #4caf50;
             color: white;
             border: none;
             padding: 10px;
-            font-size: 16px;
+            font-size: 14px;
+            font-weight: bold;
             border-radius: 4px;
             cursor: pointer;
-            margin-bottom: 20px;
         }
         .btn-calcular:hover {
             background-color: #45a049;
         }
         .resultado {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e7f4e4;
+            border: 1px solid #d4edda;
+            border-radius: 4px;
             font-weight: bold;
-            font-size: 16px;
-        }
-        /* Estilo para a seta do vetor */
-        .vector {
-            position: relative;
-            display: inline-block;
-        }
-        .vector::after {
-            content: "→";
-            position: absolute;
-            top: -0.5em;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.75em;
+            color: #155724;
+            display: none;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="title">CALCULE:</div>
-    <div class="label">Nome da Equação:</div>
-    <input type="text" id="equationName" class="input-text" placeholder="Ex: Força" oninput="atualizarInterface()">
+    <div class="title">Calculadora de Física / Matemática</div>
+    
+    <label class="label" for="equacao">Escolha a Equação:</label>
+    <select id="equacao" class="input-text" onchange="gerarCampos()">
+        <option value="">-- Selecione uma equação --</option>
+        <option value="v_d_t">Velocidade Média (v = d / t)</option>
+        <option value="f_m_a">Segunda Lei de Newton (F = m * a)</option>
+        <option value="v_r_i">Lei de Ohm (V = R * I)</option>
+    </select>
 
-    <div class="info-line">
-        Simbolo: <span id="lblSimbolo">-</span> | 
-        Equação: <span id="lblEquacao">-</span> | 
-        Unidade de Medida: <span id="lblUnidade">-</span>
+    <div id="instrucao" style="font-size: 12px; color: #666; margin-bottom: 10px; display: none;">
+        * Deixe em branco o campo da variável que você deseja descobrir.
     </div>
 
-    <div id="msgVariaveis" style="font-size: 13px; color: #333; margin-bottom: 15px;">
-        Digite o nome de uma equação válida para ver as variáveis.
-    </div>
+    <div id="campos-variaveis" class="variables-container"></div>
 
-    <!-- Campos de variáveis gerados dinamicamente -->
-    <div id="variablesContainer" class="variables-container"></div>
+    <button class="btn-calcular" onclick="calcular()">Calcular</button>
 
-    <button class="btn-calcular" onclick="calcularResultado()">Calcular</button>
-
-    <div class="resultado">Resultado: <span id="lblResultado">-</span></div>
+    <div id="resultado" class="resultado"></div>
 </div>
 
 <script>
-    // Banco de dados das equações suportadas
-    const equacoes = {
-        "força": {
-            simbolo: '<span class="vector">F</span>',
-            equacao: '<span class="vector">F</span> = m · <span class="vector">a</span>',
-            unidade: 'N (Newtons)',
-            variaveis: [
-                { id: 'massa', nome: 'Massa (m) em kg' },
-                { id: 'aceleracao', nome: 'Aceleração (<span class="vector">a</span>) em m/s²' }
-            ],
-            calculo: (vals) => vals.massa * vals.aceleracao
-        },
-        "velocidade": {
-            simbolo: '<span class="vector">v</span>',
-            equacao: '<span class="vector">v</span> = Δs / Δt',
-            unidade: 'm/s',
-            variaveis: [
-                { id: 'espaco', nome: 'Variação de Espaço (Δs) em metros' },
-                { id: 'tempo', nome: 'Variação de Tempo (Δt) em segundos' }
-            ],
-            calculo: (vals) => vals.tempo !== 0 ? vals.espaco / vals.tempo : "Erro (Divisão por zero)"
-        },
-        "aceleração": {
-            simbolo: '<span class="vector">a</span>',
-            equacao: '<span class="vector">a</span> = Δ<span class="vector">v</span> / Δt',
-            unidade: 'm/s²',
-            variaveis: [
-                { id: 'velocidade', nome: 'Variação de Velocidade (Δ<span class="vector">v</span>) em m/s' },
-                { id: 'tempo', nome: 'Variação de Tempo (Δt) em segundos' }
-            ],
-            calculo: (vals) => vals.tempo !== 0 ? vals.velocidade / vals.tempo : "Erro (Divisão por zero)"
+// Banco de dados das equações com suas respectivas unidades e símbolos
+const equacoes CONFIG = {
+    v_d_t: {
+        nome: "Velocidade Média",
+        campos: [
+            { id: "v", label: "Velocidade Média (v)", unidade: "m/s" },
+            { id: "d", label: "Distância (d)", unidade: "metros (m)" },
+            { id: "t", label: "Tempo (t)", unidade: "segundos (s)" }
+        ],
+        resolver: (valores) => {
+            let { v, d, t } = valores;
+            if (v === null) return { simbolo: "v", valor: d / t, unidade: "m/s" };
+            if (d === null) return { simbolo: "d", valor: v * t, unidade: "m" };
+            if (t === null) return { simbolo: "t", valor: d / v, unidade: "s" };
         }
-    };
+    },
+    f_m_a: {
+        nome: "Segunda Lei de Newton",
+        campos: [
+            { id: "F", label: "Força (F)", unidade: "Newtons (N)" },
+            { id: "m", label: "Massa (m)", unidade: "kg" },
+            { id: "a", label: "Aceleração (a)", unidade: "m/s²" }
+        ],
+        resolver: (valores) => {
+            let { F, m, a } = valores;
+            if (F === null) return { simbolo: "F", valor: m * a, unidade: "N" };
+            if (m === null) return { simbolo: "m", valor: F / a, unidade: "kg" };
+            if (a === null) return { simbolo: "a", valor: F / m, unidade: "m/s²" };
+        }
+    },
+    v_r_i: {
+        nome: "Lei de Ohm",
+        campos: [
+            { id: "V", label: "Tensão / Voltagem (V)", unidade: "Volts (V)" },
+            { id: "R", label: "Resistência (R)", unidade: "Ohms (Ω)" },
+            { id: "I", label: "Corrente Elétrica (I)", unidade: "Amperes (A)" }
+        ],
+        resolver: (valores) => {
+            let { V, R, I } = valores;
+            if (V === null) return { simbolo: "V", valor: R * I, unidade: "V" };
+            if (R === null) return { simbolo: "R", valor: V / I, unidade: "Ω" };
+            if (I === null) return { simbolo: "I", valor: V / R, unidade: "A" };
+        }
+    }
+};
 
-    function atualizarInterface() {
-        const busca = document.getElementById('equationName').value.trim().toLowerCase();
-        const eq = equacoes[busca];
+function gerarCampos() {
+    const selecao = document.getElementById("equacao").value;
+    const container = document.getElementById("campos-variaveis");
+    const instrucao = document.getElementById("instrucao");
+    const divResultado = document.getElementById("resultado");
+    
+    container.innerHTML = "";
+    divResultado.style.display = "none";
 
-        const lblSimbolo = document.getElementById('lblSimbolo');
-        const lblEquacao = document.getElementById('lblEquacao');
-        const lblUnidade = document.getElementById('lblUnidade');
-        const msgVariaveis = document.getElementById('msgVariaveis');
-        const container = document.getElementById('variablesContainer');
+    if (!selecao) {
+        instrucao.style.display = "none";
+        return;
+    }
 
-        // Limpa campos anteriores
-        container.innerHTML = '';
-        document.getElementById('lblResultado').innerHTML = '-';
+    instrucao.style.display = "block";
+    const equacaoAtual = CONFIG[selecao];
 
-        if (eq) {
-            lblSimbolo.innerHTML = eq.simbolo;
-            lblEquacao.innerHTML = eq.equacao;
-            lblUnidade.innerHTML = eq.unidade;
-            msgVariaveis.style.display = 'none';
+    equacaoAtual.campos.forEach(campo => {
+        const div = document.createElement("div");
+        div.className = "variable-field";
+        div.innerHTML = `
+            <label for="${campo.id}">${campo.label}:</label>
+            <input type="number" id="${campo.id}" step="any" placeholder="Deixe em branco para calcular">
+        `;
+        container.appendChild(div);
+    });
+}
 
-            // Cria dinamicamente os inputs para as variáveis necessárias
-            eq.variaveis.forEach(v => {
-                const div = document.createElement('div');
-                div.className = 'variable-field';
-                
-                const label = document.createElement('label');
-                label.innerHTML = v.nome;
-                
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.id = `var_${v.id}`;
-                input.placeholder = 'Digite o valor';
-                
-                div.appendChild(label);
-                div.appendChild(input);
-                container.appendChild(div);
-            });
+function calcular() {
+    const selecao = document.getElementById("equacao").value;
+    const divResultado = document.getElementById("resultado");
+
+    if (!selecao) {
+        alert("Por favor, selecione uma equação primeiro.");
+        return;
+    }
+
+    const equacaoAtual = CONFIG[selecao];
+    const valores = {};
+    let emBranco = [];
+
+    // Coleta os valores digitados
+    equacaoAtual.campos.forEach(campo => {
+        const input = document.getElementById(campo.id);
+        if (input.value.trim() === "") {
+            valores[campo.id] = null;
+            emBranco.push(campo.id);
         } else {
-            lblSimbolo.innerHTML = '-';
-            lblEquacao.innerHTML = '-';
-            lblUnidade.innerHTML = '-';
-            msgVariaveis.style.display = 'block';
+            valores[campo.id] = parseFloat(input.value);
         }
+    });
+
+    // Valida se o usuário deixou exatamente uma variável em branco
+    if (emBranco.length !== 1) {
+        alert("Erro: Você deve deixar exatamente UM campo em branco para que ele seja calculado.");
+        return;
     }
 
-    function calcularResultado() {
-        const busca = document.getElementById('equationName').value.trim().toLowerCase();
-        const eq = equacoes[busca];
-        const lblResultado = document.getElementById('lblResultado');
-
-        if (!eq) {
-            lblResultado.innerHTML = 'Selecione uma equação válida primeiro.';
-            return;
+    // Executa o cálculo matemático baseado na função da equação
+    try {
+        const resultado = equacaoAtual.resolver(valores);
+        
+        if (isNaN(resultado.valor) || !isFinite(resultado.valor)) {
+            divResultado.innerHTML = "Erro matemático (divisão por zero ou valor inválido).";
+            divResultado.style.backgroundColor = "#f8d7da";
+            divResultado.style.color = "#721c24";
+        } else {
+            // Exibe o símbolo, o valor formatado e a unidade de medida
+            divResultado.innerHTML = `Resultado: ${resultado.simbolo} = ${resultado.valor.toFixed(2)} ${resultado.unidade}`;
+            divResultado.style.backgroundColor = "#e7f4e4";
+            divResultado.style.color = "#155724";
         }
-
-        const valores = {};
-        let camposPreenchidos = true;
-
-        eq.variaveis.forEach(v => {
-            const input = document.getElementById(`var_${v.id}`);
-            if (input && input.value !== '') {
-                valores[v.id] = parseFloat(input.value);
-            } else {
-                camposPreenchidos = false;
-            }
-        });
-
-        if (!camposPreenchidos) {
-            lblResultado.innerHTML = 'Preencha todas as variáveis.';
-            return;
-        }
-
-        const res = eq.calculo(valores);
-        lblResultado.innerHTML = typeof res === 'number' ? `${res.toFixed(2)}` : res;
+        
+        divResultado.style.display = "block";
+    } catch (e) {
+        alert("Ocorreu um erro ao processar o cálculo.");
     }
+}
 </script>
 
 </body>
 </html>
+
+
