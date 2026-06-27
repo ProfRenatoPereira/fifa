@@ -114,9 +114,9 @@
     </div>
 
     <div class="display-fields">
-        <span>Simb: <strong id="simbEq">-</strong></span> |
-        <span>Eq: <strong id="formulaEq">-</strong></span> |
-        <span>Unid: <strong id="unidEq">-</strong></span>
+        <span>Simbolo: <strong id="simbEq">-</strong></span> |
+        <span>Equação: <strong id="formulaEq">-</strong></span> |
+        <span>Unidade de Medida: <strong id="unidEq">-</strong></span>
     </div>
 
     <hr>
@@ -139,11 +139,11 @@
 const equacoes = {
     "força": {
         simbolo: "F",
-        formula: "m * a",
+        formula: "m * "<math xmlns="http://w3.org"><mover><mi>a</mi><mo>&#x2192;</mo></mover></math>"",
         unidade: "N",
         variaveis: [
             { nome: "Massa", simbolo: "m", unidade: "kg" },
-            { nome: "Aceleração", simbolo: "a", unidade: "m/s²" }
+            { nome: "Aceleração", simbolo: "<math xmlns="http://w3.org"><mover><mi>a</mi><mo>&#x2192;</mo></mover></math>"", unidade: "m/s²" }
         ],
         calculo: (vals) => vals[0] * vals[1]
     },
