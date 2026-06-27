@@ -105,84 +105,88 @@
 
 
 
-<div class="container-mucalc"> 
-    <h2>CALCULE:</h2> 
-    <div class="setup-section"> 
-        <label>Nome da Equação:</label> 
-        <input type="text" id="nomeEq" placeholder="Ex: Força" oninput="configurarCalculadora()"> 
-    </div> 
-    <div class="display-fields"> 
-        <span>Simbolo: <strong id="simbEq">-</strong></span> | 
-        <span>Equação: <strong id="formulaEq">-</strong></span> | 
-        <span>Unidade de Medida: <strong id="unidEq">-</strong></span> 
-    </div> 
-    <hr> 
-    <div id="inputs-variaveis"> 
-        <!-- Campos gerados dinamicamente pelo JS --> 
-        <p>Digite o nome de uma equação válida para ver as variáveis.</p> 
-    </div> 
-    <button onclick="realizarCalculo()" class="btn-calcular">Calcular</button> 
-    <div id="resultado" class="result-box"> Resultado: - </div> 
-</div> 
+<div class="calculator-card">
+    <h3>CALCULE:</h3>
+    <label>Nome da Equação:</label>
+    <input type="text" id="equationInput" placeholder="Ex: Força" oninput="updateForm()">
+    
+    <div id="equationInfo" class="info-line">
+        Simbolo: <span id="symbol">-</span> | 
+        Equação: <span id="formula">-</span> | 
+        Unidade: <span id="unit">-</span>
+    </div>
 
+    <div id="variablesContainer">
+        <!-- Campos de variáveis aparecerão aqui -->
+    </div>
+
+    <button onclick="calculate()">Calcular</button>
+    
+    <div class="result-box">
+        <strong>Resultado:</strong> <span id="result">-</span>
+    </div>
+</div>
+
+
+
+    
 <script>
-// Banco de dados de equações
-const equacoes = {
+const db = {
     "força": {
-        simbolo: "F",
-        formula: "m * a",
-        unidade: "N",
-        variaveis: [
-            { nome: "Massa", simbolo: "m", unidade: "kg" },
-            { nome: "Aceleração", simbolo: "a", unidade: "m/s²" }
-        ],
-        calculo: (vals) => vals[0] * vals[1]
+        simbolo: "$\vec{F}$",
+        formula: "m · a",
+        unidade: "Newton (N)",
+        vars: [{id: "m", label: "Massa (kg)"}, {id: "a", label: "Aceleração (m/s²)"}],
+        calc: (v) => v.m * v.a
+    },
+    "aceleração": {
+        simbolo: "$\vec{a}$",
+        formula: "Δv / Δt",
+        unidade: "m/s²",
+        vars: [{id: "dv", label: "Variação Velocidade (m/s)"}, {id: "dt", label: "Intervalo Tempo (s)"}],
+        calc: (v) => v.dv / v.dt
     },
     "velocidade": {
-        simbolo: "v",
+        simbolo: "$\vec{v}$",
         formula: "Δs / Δt",
         unidade: "m/s",
-        variaveis: [
-            { nome: "Distância", simbolo: "Δs", unidade: "m" },
-            { nome: "Tempo", simbolo: "Δt", unidade: "s" }
-        ],
-        calculo: (vals) => vals[0] / vals[1]
+        vars: [{id: "ds", label: "Deslocamento (m)"}, {id: "dt", label: "Tempo (s)"}],
+        calc: (v) => v.ds / v.dt
     }
 };
 
-function configurarCalculadora() {
-    const nome = document.getElementById('nomeEq').value.toLowerCase();
-    const eq = equacoes[nome];
-    const container = document.getElementById('inputs-variaveis');
-
-    if (eq) {
-        // Preenche metadados
-        document.getElementById('simbEq').innerText = eq.simbolo;
-        document.getElementById('formulaEq').innerText = eq.formula;
-        document.getElementById('unidEq').innerText = eq.unidade;
-
-        // Gera inputs de valores
-        container.innerHTML = eq.variaveis.map((v, index) => `
+function updateForm() {
+    const name = document.getElementById('equationInput').value.toLowerCase();
+    const data = db[name];
+    const container = document.getElementById('variablesContainer');
+    
+    if (data) {
+        document.getElementById('symbol').innerText = data.simbolo;
+        document.getElementById('formula').innerText = data.formula;
+        document.getElementById('unit').innerText = data.unidade;
+        
+        container.innerHTML = data.vars.map(v => `
             <div class="var-group">
-                <label>Variável ${v.simbolo} (${v.nome} em ${v.unidade}):</label>
-                <input type="number" class="valor-input" data-index="${index}" placeholder="0.00">
+                <label>${v.label}</label>
+                <input type="number" class="var-input" data-id="${v.id}">
             </div>
         `).join('');
     } else {
-        container.innerHTML = "<p>Equação não encontrada.</p>";
+        container.innerHTML = "Digite o nome de uma equação válida.";
     }
 }
 
-function realizarCalculo() {
-    const nome = document.getElementById('nomeEq').value.toLowerCase();
-    const eq = equacoes[nome];
-    if (!eq) return;
+function calculate() {
+    const name = document.getElementById('equationInput').value.toLowerCase();
+    const data = db[name];
+    if (!data) return;
 
-    const inputs = document.querySelectorAll('.valor-input');
-    const valores = Array.from(inputs).map(i => parseFloat(i.value) || 0);
-    
-    const resultado = eq.calculo(valores);
-    document.getElementById('resultado').innerText = `${eq.simbolo} = ${resultado.toFixed(2)} ${eq.unidade}`;
+    const inputs = document.querySelectorAll('.var-input');
+    let values = {};
+    inputs.forEach(input => values[input.dataset.id] = parseFloat(input.value));
+
+    const res = data.calc(values);
+    document.getElementById('result').innerText = isNaN(res) ? "Preencha todos os campos" : `${res} ${data.unidade}`;
 }
 </script>
 
